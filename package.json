@@ -1,9 +1,26 @@
 {
-    "name": "node-global-key-listener",
-    "version": "0.3.0",
-    "description": "A module to listen to global key events",
-    "types": "build/index.d.ts",
+    "name": "global-key-listener",
+    "version": "0.0.1",
+    "description": "A node module to listen to global key events",
+    "keywords": [
+        "key",
+        "listener",
+        "global",
+        "node"
+    ],
+    "homepage": "https://github.com/abhinav-shram/global-key-listener",
+    "bugs": {
+        "url": "https://github.com/abhinav-shram/global-key-listener/issues"
+    },
+    "repository": {
+        "type": "git",
+        "url": "git+https://github.com/abhinav-shram/global-key-listener.git"
+    },
+    "license": "MIT",
+    "author": "abhinav-shram",
+    "type": "commonjs",
     "main": "build/index.js",
+    "types": "build/index.d.ts",
     "files": [
         "bin/**/*",
         "build/**/*"
@@ -16,30 +33,14 @@
         "compile-mac": "swiftc src/bin/MacKeyServer/main.swift -o bin/MacKeyServer",
         "compile-x11": "scripts/compile-x11.sh"
     },
-    "repository": {
-        "type": "git",
-        "url": "git+https://github.com/LaunchMenu/node-global-key-listener.git"
+    "dependencies": {
+        "sudo-prompt": "^9.2.1"
     },
-    "keywords": [
-        "key",
-        "listener",
-        "global",
-        "node"
-    ],
-    "author": "Sancarn",
-    "license": "MIT",
-    "bugs": {
-        "url": "https://github.com/LaunchMenu/node-global-key-listener/issues"
-    },
-    "homepage": "https://github.com/LaunchMenu/node-global-key-listener#readme",
     "devDependencies": {
         "@types/node": "^14.14.37",
         "typescript": "^4.2.3"
     },
     "publishConfig": {
         "access": "public"
-    },
-    "dependencies": {
-        "sudo-prompt": "^9.2.1"
     }
 }
