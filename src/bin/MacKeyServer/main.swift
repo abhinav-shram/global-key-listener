@@ -51,6 +51,7 @@ Other examples of usage of event taps:
 //External imports
 import Swift
 import Darwin.C
+import CoreGraphics
 
 //Import of CGEvent, CGEventTapProxy, CGEventType, CGEvent, ...
 import Foundation
@@ -223,7 +224,7 @@ func getModifierDownState(event: CGEvent, keyCode: Int64) -> Bool {
  * @remark keyCodes can be found [here](https://stackoverflow.com/a/16125341).
  */
 func myCGEventTapCallback(proxy: CGEventTapProxy, type: CGEventType, event: CGEvent, refcon: UnsafeMutableRawPointer?) -> Unmanaged<CGEvent>? {
-    if [.keyDown , .keyUp].contains(type) {
+    if type == .keyDown || type == .keyUp {
         let keyCode = event.getIntegerValueField(.keyboardEventKeycode) //CGKeyCode
         if haltPropogation(
              isMouse: false,
@@ -234,7 +235,7 @@ func myCGEventTapCallback(proxy: CGEventTapProxy, type: CGEventType, event: CGEv
             return nil
         }
 
-    } else if [.flagsChanged].contains(type) {
+    } else if type == .flagsChanged {
         //keycode is still available
         let keyCode = event.getIntegerValueField(.keyboardEventKeycode)
         let downState = getModifierDownState(event: event, keyCode: keyCode);
@@ -247,19 +248,8 @@ func myCGEventTapCallback(proxy: CGEventTapProxy, type: CGEventType, event: CGEv
             return nil
         }
 
-    } else if [
-                .leftMouseDown,
-                .leftMouseUp,
-                .rightMouseDown,
-                .rightMouseUp,
-                .otherMouseDown,
-                .otherMouseUp,
-              ].contains(type) {
-        let isDown = [
-          .leftMouseDown,
-          .rightMouseDown,
-          .otherMouseDown,
-        ].contains(type)
+    } else if type == .leftMouseDown || type == .leftMouseUp || type == .rightMouseDown || type == .rightMouseUp || type == .otherMouseDown || type == .otherMouseUp {
+        let isDown = type == .leftMouseDown || type == .rightMouseDown || type == .otherMouseDown;
         let keyCode = event.getIntegerValueField(.mouseEventButtonNumber)
         if haltPropogation(
              isMouse: true,
@@ -270,7 +260,7 @@ func myCGEventTapCallback(proxy: CGEventTapProxy, type: CGEventType, event: CGEv
             return nil
         }
 
-    } else if (type == CGEventType.tapDisabledByTimeout) {
+    } else if type == .tapDisabledByTimeout {
         logErr("Timeout error raised on key listener");
         return nil
     }
