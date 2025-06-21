@@ -5,7 +5,6 @@ import {IGlobalKeyEvent} from "./_types/IGlobalKeyEvent";
 import {X11GlobalKeyLookup} from "./_data/X11GlobalKeyLookup";
 import Path from "path";
 import {IX11Config} from "./_types/IX11Config";
-import sudo from "sudo-prompt";
 import {isSpawnEventSupported} from "./isSpawnEventSupported";
 const sPath = "../../bin/X11KeyServer";
 
@@ -68,29 +67,13 @@ export class X11KeyServer implements IGlobalKeyServer {
             const serverPath = this.config.serverPath || Path.join(__dirname, sPath);
 
             // If setup fails, try adding permissions
-            this.proc.on("error", async err => {
+            this.proc.on("error", err => {
                 errored = true;
-                if (skipPerms) {
-                    rej(err);
-                } else {
-                    try {
-                        this.restarting = true;
-                        this.proc.kill();
-                        await this.addPerms(serverPath);
-
-                        // If the server was stopped in between, just act as if it was started successfully
-                        if (!this.running) {
-                            res();
-                            return;
-                        }
-
-                        res(this.start(true));
-                    } catch (e) {
-                        rej(e);
-                    } finally {
-                        this.restarting = false;
-                    }
-                }
+                rej(
+                    new Error(
+                        `Failed to start key listener. You may need to grant Accessibility permissions to your terminal or application in System Settings > Privacy & Security > Accessibility. Original error: ${err.message}`
+                    )
+                );
             });
 
             if (isSpawnEventSupported()) this.proc.on("spawn", res);
@@ -106,24 +89,24 @@ export class X11KeyServer implements IGlobalKeyServer {
      * Makes sure that the given path is executable
      * @param path The path to add the perms to
      */
-    protected addPerms(path: string): Promise<void> {
-        const options = {
-            name: "Global key listener",
-        };
-        return new Promise((res, err) => {
-            sudo.exec(`chmod +x "${path}"`, options, (error, stdout, stderr) => {
-                if (error) {
-                    err(error);
-                    return;
-                }
-                if (stderr) {
-                    err(stderr);
-                    return;
-                }
-                res();
-            });
-        });
-    }
+    // protected addPerms(path: string): Promise<void> {
+    //     const options = {
+    //         name: "Global key listener",
+    //     };
+    //     return new Promise((res, err) => {
+    //         sudo.exec(`chmod +x "${path}"`, options, (error, stdout, stderr) => {
+    //             if (error) {
+    //                 err(error);
+    //                 return;
+    //             }
+    //             if (stderr) {
+    //                 err(stderr);
+    //                 return;
+    //             }
+    //             res();
+    //         });
+    //     });
+    // }
 
     /** Stop the Key server */
     public stop() {
