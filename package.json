@@ -1,6 +1,6 @@
 {
     "name": "ac-global-key-listener",
-    "version": "0.0.1",
+    "version": "0.0.2",
     "description": "A node module to listen to global key events",
     "keywords": [
         "key",
